@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -15,9 +16,32 @@ type CustomerProductList struct {
 	Products  []string
 }
 
-func GetCustomersAndProducts(fileName string) *CustomerProductList {
+func GetCustomersAndProductsStreamer(done <-chan struct{}, relativePathFileName string) <-chan CustomerProductList {
+	pcChan := make(chan CustomerProductList)
+	//e := new(CustomerProductList)
+	result, file := fileExists(relativePathFileName)
+	defer file.Close()
+	defer close(pcChan) //I have no idea what I'm doing with channels yet. At least this doesn't crash :(
+
+	if result {
+		//if the file is open, attempt to read lines...
+		s := bufio.NewScanner(file)
+		for s.Scan() {
+			//This is where I want to pipe results to the channel output... More playtime req'd
+			line := s.Text()
+
+			c, p := splitCustomersAndProducts(line)
+			fmt.Println(c)
+			fmt.Println(p)
+			//pcChan <- CustomerProductList{c, p}
+		}
+	}
+	return pcChan
+}
+
+func GetCustomersAndProducts(relativePathFileName string) *CustomerProductList {
 	e := new(CustomerProductList)
-	result, file := fileExists(fileName)
+	result, file := fileExists(relativePathFileName)
 	defer file.Close()
 
 	if result {
@@ -46,8 +70,18 @@ func splitCustomersAndProducts(lineItem string) (customers []string, products []
 	return strings.Split(splitLine[0], ItemSplitterChar), strings.Split(splitLine[1], ItemSplitterChar)
 }
 
-func fileExists(fileName string) (bool, *os.File) {
-	file, err := os.Open(fileName)
+func fileExists(relativeFileName string) (bool, *os.File) {
+	//Get the current path and append to the relative path passed in
+	currentDir, err := os.Getwd()
+	if err != nil {
+		fmt.Println(err)
+		return false, nil
+	}
+	fmt.Println(currentDir) //debug
+
+	fullFileName := path.Join(currentDir, relativeFileName)
+
+	file, err := os.Open(fullFileName)
 
 	if err != nil {
 		fmt.Println("Failed to open file! ", err)

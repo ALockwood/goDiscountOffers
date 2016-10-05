@@ -4,9 +4,7 @@ package main
 
 import (
 	"fmt"
-	"os"
-
-	"github.com/alixaxel/go-gt/gt"
+	//"github.com/alixaxel/go-gt/gt"
 )
 
 func main() {
@@ -23,7 +21,7 @@ func main() {
 	//Test matrix + Hungarian. Appears to maximize cost rather than minimize; good for this use case.
 	//Original Source here: https://github.com/ThePaw/go-gt FIX REQUIRED: Swap lines 112 and 113 of Hungarian.go (TODO: Fork & push or pull req'd files into subdir)
 	//g := new(gt.Matrix)
-	g := gt.NewMatrix(3)
+	g := NewMatrix(3)
 	//g.N = 3
 	// g.A = []int64{
 	// 	2, 1, 1,
@@ -51,21 +49,24 @@ func main() {
 	// 	9, 1, 9, 1,
 	// 	9, 9, 1, 9}
 	//p, x := gt.Hungarian(g)
-	p, _ := gt.Hungarian(g)
+	p, _ := Hungarian(g)
 	//fmt.Println(g.A)
 	g.Print()
 	fmt.Println(p)
 	//fmt.Println(x)
 
 	//Test reading from a file
-	//So relative paths seem to be a pain in Go...
-	pwd, err := os.Getwd()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	//GetCustomersAndProducts("/InputSample/InputSample.txt")
+
+	//Test streaming from a file
+	done := make(chan struct{})
+	defer close(done)
+
+	t := GetCustomersAndProductsStreamer(done, "/InputSample/InputSample.txt")
+	for r := range t {
+		fmt.Println("CUSTOMER LIST")
+		fmt.Println(r.Customers)
+		fmt.Println("PRODUCT LIST")
+		fmt.Println(r.Products)
 	}
-	fmt.Println(pwd)
-
-	GetCustomersAndProducts(pwd + "/InputSample/InputSample.txt")
-
 }
