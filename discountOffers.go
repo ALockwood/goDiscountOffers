@@ -59,14 +59,11 @@ func main() {
 	//GetCustomersAndProducts("/InputSample/InputSample.txt")
 
 	//Test streaming from a file
-	done := make(chan struct{})
-	defer close(done)
+	t := GetCustomersAndProductsStreamer("/InputSample/InputSample.txt")
 
-	t := GetCustomersAndProductsStreamer(done, "/InputSample/InputSample.txt")
 	for r := range t {
-		fmt.Println("CUSTOMER LIST")
-		fmt.Println(r.Customers)
-		fmt.Println("PRODUCT LIST")
-		fmt.Println(r.Products)
+		fmt.Println(r.Customers, r.Products)
+		//TODO: Implement routine that will loop through all customer & product combos (loop count = max length of either slice) and build a matrix of their scores
+		//Then run hungarian on the matrix (TODO: switch hungarian implementation to float64 from int64)
 	}
 }

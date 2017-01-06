@@ -16,26 +16,25 @@ type CustomerProductList struct {
 	Products  []string
 }
 
-func GetCustomersAndProductsStreamer(done <-chan struct{}, relativePathFileName string) <-chan CustomerProductList {
+func GetCustomersAndProductsStreamer(relativePathFileName string) <-chan CustomerProductList {
 	pcChan := make(chan CustomerProductList)
-	//e := new(CustomerProductList)
-	result, file := fileExists(relativePathFileName)
-	defer file.Close()
-	defer close(pcChan) //I have no idea what I'm doing with channels yet. At least this doesn't crash :(
 
-	if result {
-		//if the file is open, attempt to read lines...
-		s := bufio.NewScanner(file)
-		for s.Scan() {
-			//This is where I want to pipe results to the channel output... More playtime req'd
-			line := s.Text()
+	go func() {
+		result, file := fileExists(relativePathFileName)
+		defer file.Close()
 
-			c, p := splitCustomersAndProducts(line)
-			fmt.Println(c)
-			fmt.Println(p)
-			//pcChan <- CustomerProductList{c, p}
+		if result {
+			//if the file is open, attempt to read lines...
+			s := bufio.NewScanner(file)
+			for s.Scan() {
+				line := s.Text()
+				c, p := splitCustomersAndProducts(line)
+
+				pcChan <- CustomerProductList{c, p}
+			}
 		}
-	}
+		close(pcChan)
+	}()
 	return pcChan
 }
 
