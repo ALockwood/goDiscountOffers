@@ -63,6 +63,8 @@ func main() {
 
 	for r := range t {
 		fmt.Println(r.Customers, r.Products)
+		tmpMatrix := BuildMatrix(r)
+		tmpMatrix.Print()
 		//TODO: Implement routine that will loop through all customer & product combos (loop count = max length of either slice) and build a matrix of their scores
 		//Then run hungarian on the matrix (TODO: switch hungarian implementation to float64 from int64)
 	}
