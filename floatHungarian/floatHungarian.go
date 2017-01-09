@@ -1,22 +1,38 @@
 // Copyright 2012 The Gt Authors. All rights reserved. See the LICENSE file.
 
-package main
+package floatHungarian
 
 // Hungarian algorithm to solve the assigment problem.
 
 import (
 	"math"
+
+	"github.com/alockwood/goDiscountOffers/floatMatrix"
 )
 
 type env struct {
 	m, n   int64
-	g      *Matrix
+	g      *floatMatrix.FloatMatrix
 	T, S   []bool
-	slack  []int64
+	slack  []float64
 	slackx []int64
 	prev   []int64
 	xy, yx []int64
-	lx, ly []int64
+	lx, ly []float64
+}
+
+func min(a, b float64) float64 {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func max(a, b float64) float64 {
+	if a > b {
+		return a
+	}
+	return b
 }
 
 func newEnv(n int64) *env {
@@ -25,13 +41,13 @@ func newEnv(n int64) *env {
 	e.n = n
 	e.T = make([]bool, n)
 	e.S = make([]bool, n)
-	e.slack = make([]int64, n)
+	e.slack = make([]float64, n)
 	e.slackx = make([]int64, n)
 	e.prev = make([]int64, n)
 	e.xy = make([]int64, n)
 	e.yx = make([]int64, n)
-	e.lx = make([]int64, n)
-	e.ly = make([]int64, n)
+	e.lx = make([]float64, n)
+	e.ly = make([]float64, n)
 	var i int64
 	for i = 0; i < n; i++ {
 		e.xy[i] = -1
@@ -42,7 +58,7 @@ func newEnv(n int64) *env {
 
 func (e *env) update() {
 	var i int64
-	var d int64 = math.MaxInt64
+	var d float64 = math.MaxFloat64
 	for i = 0; i < e.n; i++ {
 		if !e.T[i] {
 			d = min(d, e.slack[i])
@@ -102,6 +118,9 @@ func (e *env) augment() {
 	for {
 		for rd < wr {
 			rd++
+			if rd == int64(len(q)) {
+				break
+			}
 			i = q[rd]
 			for j = 0; j < e.n; j++ {
 				if e.g.Get(i, j) == e.lx[i]+e.ly[j] && !e.T[j] {
@@ -109,6 +128,7 @@ func (e *env) augment() {
 						break
 					}
 					e.T[j] = true
+					//wr++
 					q[wr] = e.yx[j]
 					wr++
 					e.add(e.yx[j], i)
@@ -132,8 +152,9 @@ func (e *env) augment() {
 				} else {
 					e.T[j] = true
 					if !e.S[e.yx[j]] {
-						wr++
+						//wr++
 						q[wr] = e.yx[j]
+						wr++
 						e.add(e.yx[j], e.slackx[j])
 					}
 				}
@@ -156,7 +177,7 @@ func (e *env) augment() {
 	}
 }
 
-func initH(g *Matrix) (e *env) {
+func initH(g *floatMatrix.FloatMatrix) (e *env) {
 	var i, j int64
 	e = newEnv(g.N)
 	e.g = g
@@ -170,7 +191,7 @@ func initH(g *Matrix) (e *env) {
 }
 
 // Hungarian uses the Hungarian algorithm to solve the assigment problem.
-func Hungarian(g *Matrix) (xy, yx []int64) {
+func Hungarian(g *floatMatrix.FloatMatrix) (xy, yx []int64) {
 	e := initH(g)
 	e.augment()
 	return e.xy, e.yx

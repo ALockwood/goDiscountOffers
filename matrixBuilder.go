@@ -1,6 +1,8 @@
 package main
 
-func BuildMatrix(cuPr CustomerProductList) *Matrix {
+import "github.com/alockwood/goDiscountOffers/floatMatrix"
+
+func BuildMatrix(cuPr CustomerProductList) *floatMatrix.FloatMatrix {
 	var matrixDim int64
 
 	if len(cuPr.Customers) > len(cuPr.Products) {
@@ -11,24 +13,15 @@ func BuildMatrix(cuPr CustomerProductList) *Matrix {
 
 	//Not great -- need to look into how to handle this
 	if matrixDim == 0 {
-		return NewMatrix(0)
+		return floatMatrix.NewMatrix(0)
 	}
 
-	pcm := NewMatrix(matrixDim)
+	pcfm := floatMatrix.NewMatrix(matrixDim)
 
 	for custIdx, cust := range cuPr.Customers {
-		/*fmt.Print("cIdx: ")
-		fmt.Print(custIdx)
-		fmt.Println("")
-		fmt.Println(cust)*/
 		for prodIdx, prod := range cuPr.Products {
-			/*fmt.Print("pIdx: ")
-			fmt.Print(prodIdx)
-			fmt.Println("")
-			fmt.Println(prod)*/
-			pcm.Set(int64(custIdx), int64(prodIdx), int64(SuitabilityScorer(cust, prod)))
+			pcfm.Set(int64(custIdx), int64(prodIdx), 0-SuitabilityScorer(cust, prod))
 		}
 	}
-
-	return pcm
+	return pcfm
 }
