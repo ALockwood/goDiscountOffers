@@ -8,15 +8,17 @@ import (
 	"strings"
 )
 
-const CustomerProductSplitterChar string = ";"
-const ItemSplitterChar string = ","
+const (
+	customerProductSplitterChar string = ";"
+	itemSplitterChar            string = ","
+)
 
 type CustomerProductList struct {
 	Customers []string
 	Products  []string
 }
 
-func GetCustomersAndProductsStreamer(relativePathFileName string) <-chan CustomerProductList {
+func getCustomersAndProductsStreamer(relativePathFileName string) <-chan CustomerProductList {
 	pcChan := make(chan CustomerProductList)
 
 	go func() {
@@ -39,14 +41,14 @@ func GetCustomersAndProductsStreamer(relativePathFileName string) <-chan Custome
 }
 
 func splitCustomersAndProducts(lineItem string) (customers []string, products []string) {
-	splitLine := strings.Split(lineItem, CustomerProductSplitterChar)
+	splitLine := strings.Split(lineItem, customerProductSplitterChar)
 
 	if len(splitLine) != 2 {
 		fmt.Println("Line parsing failed to find at least one product and/or customer.")
 		return nil, nil
 	}
 
-	return strings.Split(splitLine[0], ItemSplitterChar), strings.Split(splitLine[1], ItemSplitterChar)
+	return strings.Split(splitLine[0], itemSplitterChar), strings.Split(splitLine[1], itemSplitterChar)
 }
 
 func fileExists(relativeFileName string) (bool, *os.File) {
@@ -56,8 +58,6 @@ func fileExists(relativeFileName string) (bool, *os.File) {
 		fmt.Println(err)
 		return false, nil
 	}
-	fmt.Println(currentDir) //debug
-
 	fullFileName := path.Join(currentDir, relativeFileName)
 
 	file, err := os.Open(fullFileName)

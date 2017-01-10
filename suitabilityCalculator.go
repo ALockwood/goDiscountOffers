@@ -1,6 +1,12 @@
 package main
 
-import "math/big"
+import (
+	"fmt"
+	"math"
+	"math/big"
+
+	"github.com/alockwood/goDiscountOffers/munkres"
+)
 
 const (
 	evenProductNameMultiplier       float64 = 1.5
@@ -34,4 +40,13 @@ func SuitabilityScorer(customerName string, productName string) float64 {
 	}
 
 	return tmpSuitabilityScore
+}
+
+func PrintScores(relativePathSourceFile string) {
+	cpStream := getCustomersAndProductsStreamer("/InputSample/InputSample.txt")
+
+	for cpPair := range cpStream {
+		tmpMatrix := BuildMatrix(cpPair)
+		fmt.Printf("%.2f\n", math.Abs(munkres.GetMunkresMinScore(tmpMatrix)))
+	}
 }

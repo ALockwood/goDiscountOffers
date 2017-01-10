@@ -288,7 +288,7 @@ func (Step6) Compute(ctx *Context) (Step, bool) {
 	return Step4{}, false
 }
 
-func ComputeMunkres(m *floatMatrix.FloatMatrix) []RowCol {
+func GetMunkresMinScore(m *floatMatrix.FloatMatrix) float64 {
 	ctx := newContext(m)
 
 	var step Step
@@ -301,15 +301,11 @@ func ComputeMunkres(m *floatMatrix.FloatMatrix) []RowCol {
 		}
 		step = nextStep
 	}
-	results := []RowCol{}
-	n := m.N
-	for i := zero64; i < n; i++ {
-		rowStart := i * n
-		for j := zero64; j < n; j++ {
-			if ctx.marked[rowStart+j] == Starred {
-				results = append(results, RowCol{i, j})
-			}
-		}
+
+	var sumMaxCost float64
+	for markedIdx, markedVal := range ctx.marked {
+		sumMaxCost += float64(markedVal) * m.A[markedIdx]
 	}
-	return results
+
+	return sumMaxCost
 }
