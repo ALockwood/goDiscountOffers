@@ -5,7 +5,7 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/alockwood/goDiscountOffers/munkres"
+	"github.com/alockwood/munkres"
 )
 
 const (
@@ -42,11 +42,35 @@ func SuitabilityScorer(customerName string, productName string) float64 {
 	return tmpSuitabilityScore
 }
 
+func buildMatrix(cuPr CustomerProductList) *munkres.FloatMatrix {
+	var matrixDim int64
+
+	if len(cuPr.Customers) > len(cuPr.Products) {
+		matrixDim = int64(len(cuPr.Customers))
+	} else {
+		matrixDim = int64(len(cuPr.Products))
+	}
+
+	//Not great -- need to look into how to handle this
+	if matrixDim == 0 {
+		return munkres.NewMatrix(0)
+	}
+
+	pcfm := munkres.NewMatrix(matrixDim)
+
+	for custIdx, cust := range cuPr.Customers {
+		for prodIdx, prod := range cuPr.Products {
+			pcfm.SetElement(int64(custIdx), int64(prodIdx), 0-SuitabilityScorer(cust, prod))
+		}
+	}
+	return pcfm
+}
+
 func PrintScores(relativePathSourceFile string) {
 	cpStream := getCustomersAndProductsStreamer("/InputSample/InputSample.txt")
 
 	for cpPair := range cpStream {
-		tmpMatrix := BuildMatrix(cpPair)
+		tmpMatrix := buildMatrix(cpPair)
 		fmt.Printf("%.2f\n", math.Abs(munkres.GetMunkresMinScore(tmpMatrix)))
 	}
 }
