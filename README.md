@@ -6,4 +6,6 @@ how to program defensively in go.
 
 ## Running
 On Windows I use PowerShell and my go utils so it's simply `GoBuildNRun` in the checked out directory.
-On Linux/Mac I think `go run *.go` might work...
+Otherwise...   
+1. Build `github.com\alockwood\goDiscountOffers`
+2. Run ` .\goDiscountOffers.exe .\InputSample\InputSample.txt`
