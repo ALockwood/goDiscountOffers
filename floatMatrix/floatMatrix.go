@@ -1,8 +1,6 @@
 package floatMatrix
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type FloatVector []float64
 
@@ -24,17 +22,6 @@ func (m FloatMatrix) Get(i int64, j int64) float64 {
 
 func (m FloatMatrix) Set(i int64, j int64, v float64) {
 	m.A[i*m.N+j] = v
-}
-
-func (v FloatVector) Len() int64 {
-	return int64(len(v))
-}
-
-func (v FloatVector) Print() {
-	for i := 0; i < len(v); i++ {
-		fmt.Printf("%f ", v[i])
-	}
-	fmt.Print("\n")
 }
 
 func (m *FloatMatrix) Print() {

@@ -2,8 +2,10 @@ package main
 
 import "math/big"
 
-const EvenProductNameMultiplier float64 = 1.5
-const GreatestCommonDivisorMultiplier float64 = 1.5
+const (
+	evenProductNameMultiplier       float64 = 1.5
+	greatestCommonDivisorMultiplier float64 = 1.5
+)
 
 //Suitability Calculator Rules (from challenge site):
 //Product Name - Even Letters
@@ -17,7 +19,7 @@ func SuitabilityScorer(customerName string, productName string) float64 {
 	var tmpSuitabilityScore float64
 
 	if LetterCount(productName)%2 == 0 {
-		tmpSuitabilityScore = float64(VowelCount(customerName)) * EvenProductNameMultiplier
+		tmpSuitabilityScore = float64(VowelCount(customerName)) * evenProductNameMultiplier
 	} else {
 		tmpSuitabilityScore = float64(ConsonantCount(customerName))
 	}
@@ -28,7 +30,7 @@ func SuitabilityScorer(customerName string, productName string) float64 {
 	gcdResult.GCD(nil, nil, p, c)
 
 	if gcdResult.Cmp(big.NewInt(1)) == 1 {
-		tmpSuitabilityScore *= GreatestCommonDivisorMultiplier
+		tmpSuitabilityScore *= greatestCommonDivisorMultiplier
 	}
 
 	return tmpSuitabilityScore

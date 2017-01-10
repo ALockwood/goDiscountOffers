@@ -5,7 +5,6 @@ package main
 import (
 	"fmt"
 
-	//"github.com/alixaxel/go-gt/gt"
 	"github.com/alockwood/goDiscountOffers/floatMatrix"
 	"github.com/alockwood/goDiscountOffers/munkres"
 )
